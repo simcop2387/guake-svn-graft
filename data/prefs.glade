@@ -16,7 +16,6 @@
         <child>
           <widget class="GtkVBox" id="vbox5">
             <property name="visible">True</property>
-            <property name="spacing">2</property>
             <child>
               <widget class="GtkHBox" id="hbox9">
                 <property name="visible">True</property>
@@ -59,6 +58,7 @@
                     <child>
                       <widget class="GtkFrame" id="frame7">
                         <property name="visible">True</property>
+                        <property name="label_xalign">0</property>
                         <property name="shadow_type">GTK_SHADOW_NONE</property>
                         <child>
                           <widget class="GtkAlignment" id="alignment9">
@@ -108,14 +108,14 @@
                                       </widget>
                                     </child>
                                     <child>
-                                      <widget class="GtkSpinButton" id="historysize-spinbutton">
+                                      <widget class="GtkSpinButton" id="spinHistorySize">
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                         <property name="adjustment">1024 256 100000000 1 1 1</property>
                                         <property name="snap_to_ticks">True</property>
                                         <property name="numeric">True</property>
-                                        <signal name="value_changed" handler="on_historysize_spinbutton_value_changed"/>
+                                        <signal name="value_changed" handler="on_spinHistorySize_value_changed"/>
                                         <signal name="change_value" handler="on_spinHistorySize_change_value"/>
                                       </widget>
                                       <packing>
@@ -134,7 +134,6 @@
                         <child>
                           <widget class="GtkLabel" id="label8">
                             <property name="visible">True</property>
-                            <property name="ypad">6</property>
                             <property name="label" translatable="yes">&lt;b&gt;Shell&lt;/b&gt;</property>
                             <property name="use_markup">True</property>
                           </widget>
@@ -150,6 +149,7 @@
                     <child>
                       <widget class="GtkFrame" id="frame4">
                         <property name="visible">True</property>
+                        <property name="label_xalign">0</property>
                         <property name="shadow_type">GTK_SHADOW_NONE</property>
                         <child>
                           <widget class="GtkAlignment" id="alignment4">
@@ -160,12 +160,25 @@
                                 <property name="visible">True</property>
                                 <property name="spacing">4</property>
                                 <child>
+                                  <widget class="GtkCheckButton" id="animate-checkbutton">
+                                    <property name="visible">True</property>
+                                    <property name="label" translatable="yes">Animate on "show and hide"</property>
+                                    <property name="use_underline">True</property>
+                                    <property name="focus_on_click">False</property>
+                                    <property name="active">True</property>
+                                    <property name="draw_indicator">True</property>
+                                    <signal name="toggled" handler="on_animate_checkbutton_toggled"/>
+                                  </widget>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                  </packing>
+                                </child>
+                                <child>
                                   <widget class="GtkCheckButton" id="ontop-checkbutton">
                                     <property name="visible">True</property>
                                     <property name="label" translatable="yes">Stay on top</property>
                                     <property name="use_underline">True</property>
                                     <property name="focus_on_click">False</property>
-                                    <property name="response_id">0</property>
                                     <property name="active">True</property>
                                     <property name="draw_indicator">True</property>
                                     <signal name="toggled" handler="on_ontop_checkbutton_toggled"/>
@@ -179,9 +192,8 @@
                                   <widget class="GtkCheckButton" id="hide-onlostfocus-checkbutton">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
-                                    <property name="label" translatable="yes">Hide on lose focus</property>
+                                    <property name="label" translatable="yes">Hide on lost focus</property>
                                     <property name="use_underline">True</property>
-                                    <property name="response_id">0</property>
                                     <property name="active">True</property>
                                     <property name="draw_indicator">True</property>
                                     <signal name="toggled" handler="on_chk_lostfocus_toggled"/>
@@ -198,7 +210,6 @@
                                     <property name="can_focus">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                     <property name="label" translatable="yes">Show scrollbar</property>
-                                    <property name="response_id">0</property>
                                     <property name="draw_indicator">True</property>
                                     <signal name="toggled" handler="on_show_scrollbar_checkbutton_toggled"/>
                                   </widget>
@@ -213,7 +224,6 @@
                         <child>
                           <widget class="GtkLabel" id="label20">
                             <property name="visible">True</property>
-                            <property name="ypad">6</property>
                             <property name="label" translatable="yes">&lt;b&gt;Window behavior&lt;/b&gt;</property>
                             <property name="use_markup">True</property>
                           </widget>
@@ -229,6 +239,7 @@
                     <child>
                       <widget class="GtkFrame" id="frame11">
                         <property name="visible">True</property>
+                        <property name="label_xalign">0</property>
                         <property name="shadow_type">GTK_SHADOW_NONE</property>
                         <child>
                           <widget class="GtkAlignment" id="alignment11">
@@ -251,7 +262,6 @@
                         <child>
                           <widget class="GtkLabel" id="label24">
                             <property name="visible">True</property>
-                            <property name="ypad">6</property>
                             <property name="label" translatable="yes">&lt;b&gt;Window size&lt;/b&gt;</property>
                             <property name="use_markup">True</property>
                           </widget>
@@ -268,11 +278,11 @@
                     <child>
                       <widget class="GtkFrame" id="frame6">
                         <property name="visible">True</property>
+                        <property name="label_xalign">0</property>
                         <property name="shadow_type">GTK_SHADOW_NONE</property>
                         <child>
                           <widget class="GtkAlignment" id="alignment6">
                             <property name="visible">True</property>
-                            <property name="top_padding">4</property>
                             <property name="left_padding">20</property>
                             <child>
                               <widget class="GtkVBox" id="vbox13">
@@ -297,7 +307,6 @@
                                             <property name="visible">True</property>
                                             <property name="label" translatable="yes">Bottom</property>
                                             <property name="use_underline">True</property>
-                                            <property name="response_id">0</property>
                                             <property name="active">True</property>
                                             <property name="draw_indicator">True</property>
                                             <signal name="toggled" handler="on_tabbottom_radiobutton_toggled"/>
@@ -326,7 +335,6 @@
                                             <property name="visible">True</property>
                                             <property name="label" translatable="yes">Top</property>
                                             <property name="use_underline">True</property>
-                                            <property name="response_id">0</property>
                                             <property name="active">True</property>
                                             <property name="draw_indicator">True</property>
                                             <property name="group">tabbottom-radiobutton</property>
@@ -353,7 +361,6 @@
                         <child>
                           <widget class="GtkLabel" id="label19">
                             <property name="visible">True</property>
-                            <property name="ypad">6</property>
                             <property name="label" translatable="yes">&lt;b&gt;Tab position&lt;/b&gt;</property>
                             <property name="use_markup">True</property>
                           </widget>
@@ -367,6 +374,9 @@
                       </packing>
                     </child>
                   </widget>
+                  <packing>
+                    <property name="tab_expand">False</property>
+                  </packing>
                 </child>
                 <child>
                   <widget class="GtkLabel" id="label6">
@@ -376,6 +386,7 @@
                   </widget>
                   <packing>
                     <property name="type">tab</property>
+                    <property name="tab_expand">False</property>
                     <property name="tab_fill">False</property>
                   </packing>
                 </child>
@@ -387,6 +398,7 @@
                     <child>
                       <widget class="GtkFrame" id="frame1">
                         <property name="visible">True</property>
+                        <property name="label_xalign">0</property>
                         <property name="shadow_type">GTK_SHADOW_NONE</property>
                         <child>
                           <widget class="GtkAlignment" id="alignment1">
@@ -417,7 +429,6 @@
                                       <widget class="GtkFontButton" id="fontbutton">
                                         <property name="visible">True</property>
                                         <property name="focus_on_click">False</property>
-                                        <property name="response_id">0</property>
                                         <property name="title" translatable="yes">Choose some font</property>
                                         <signal name="font_set" handler="on_fontbutton_font_set"/>
                                       </widget>
@@ -450,7 +461,6 @@
                                     <child>
                                       <widget class="GtkColorButton" id="font-colorbutton">
                                         <property name="visible">True</property>
-                                        <property name="response_id">0</property>
                                         <property name="title" translatable="yes">Choose some color</property>
                                         <signal name="color_set" handler="on_font_colorbutton_color_set"/>
                                       </widget>
@@ -471,7 +481,6 @@
                         <child>
                           <widget class="GtkLabel" id="label9">
                             <property name="visible">True</property>
-                            <property name="ypad">6</property>
                             <property name="label" translatable="yes">&lt;b&gt;Fonts&lt;/b&gt;</property>
                             <property name="use_markup">True</property>
                           </widget>
@@ -487,6 +496,7 @@
                     <child>
                       <widget class="GtkFrame" id="frame2">
                         <property name="visible">True</property>
+                        <property name="label_xalign">0</property>
                         <property name="shadow_type">GTK_SHADOW_NONE</property>
                         <child>
                           <widget class="GtkAlignment" id="alignment2">
@@ -516,7 +526,6 @@
                                     <child>
                                       <widget class="GtkColorButton" id="bg-colorbutton">
                                         <property name="visible">True</property>
-                                        <property name="response_id">0</property>
                                         <property name="title" translatable="yes">Choose some color</property>
                                         <signal name="color_set" handler="on_bg_colorbutton_color_set"/>
                                       </widget>
@@ -608,7 +617,6 @@
                                       <widget class="GtkCheckButton" id="chk_bg_transparent">
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
-                                        <property name="response_id">0</property>
                                         <property name="active">True</property>
                                         <property name="draw_indicator">True</property>
                                         <signal name="toggled" handler="on_chk_bg_transparent_toggled"/>
@@ -633,7 +641,6 @@
                         <child>
                           <widget class="GtkLabel" id="label12">
                             <property name="visible">True</property>
-                            <property name="ypad">6</property>
                             <property name="label" translatable="yes">&lt;b&gt;Background&lt;/b&gt;</property>
                             <property name="use_markup">True</property>
                           </widget>
@@ -650,6 +657,7 @@
                   </widget>
                   <packing>
                     <property name="position">1</property>
+                    <property name="tab_expand">False</property>
                   </packing>
                 </child>
                 <child>
@@ -661,6 +669,7 @@
                   <packing>
                     <property name="type">tab</property>
                     <property name="position">1</property>
+                    <property name="tab_expand">False</property>
                     <property name="tab_fill">False</property>
                   </packing>
                 </child>
@@ -687,6 +696,7 @@
                   </widget>
                   <packing>
                     <property name="position">2</property>
+                    <property name="tab_expand">False</property>
                   </packing>
                 </child>
                 <child>
@@ -697,6 +707,7 @@
                   <packing>
                     <property name="type">tab</property>
                     <property name="position">2</property>
+                    <property name="tab_expand">False</property>
                     <property name="tab_fill">False</property>
                   </packing>
                 </child>
@@ -717,7 +728,6 @@
                 <property name="can_focus">True</property>
                 <property name="label">gtk-close</property>
                 <property name="use_stock">True</property>
-                <property name="response_id">0</property>
                 <signal name="clicked" handler="gtk_widget_destroy" object="config-window"/>
               </widget>
             </child>

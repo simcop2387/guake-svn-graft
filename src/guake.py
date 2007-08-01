@@ -31,7 +31,6 @@ import dbus
 
 import os
 import sys
-import warnings
 import common
 from common import _
 from simplegladeapp import SimpleGladeApp, bindtextdomain
@@ -128,7 +127,6 @@ class PrefsDialog(SimpleGladeApp):
 
     def show(self):
         self.get_widget('config-window').show_all()
-        self.get_widget('config-window').deiconify()
 
     def hide(self):
         self.get_widget('config-window').hide()
@@ -145,7 +143,7 @@ class PrefsDialog(SimpleGladeApp):
 
         # history size
         val = self.client.get_int(GCONF_PATH+'general/history_size')
-        self.get_widget('historysize-spinbutton').set_value(val)
+        self.get_widget('spinHistorySize').set_value(val)
 
         # scrollbar
         ac = self.client.get_bool(GCONF_PATH + 'general/use_scrollbar')
@@ -156,8 +154,8 @@ class PrefsDialog(SimpleGladeApp):
         self.get_widget('hide-onlostfocus-checkbutton').set_active(ac)
 
         # animate flag
-        #ac = self.client.get_bool(GCONF_PATH + 'general/window_animate')
-        #self.get_widget('animate-checkbutton').set_active(ac)
+        ac = self.client.get_bool(GCONF_PATH + 'general/window_animate')
+        self.get_widget('animate-checkbutton').set_active(ac)
 
         # on top flag
         ac = self.client.get_bool(GCONF_PATH + 'general/window_ontop')
@@ -183,7 +181,8 @@ class PrefsDialog(SimpleGladeApp):
             color = gtk.gdk.color_parse(val)
             self.get_widget('font-colorbutton').set_color(color)
         except (ValueError, TypeError):
-            warnings.warn('Unable to parse color %s' % val, Warning)
+            # unable to parse color
+            pass
 
         # background
         val = self.client.get_string(GCONF_PATH+'style/background/color')
@@ -191,7 +190,8 @@ class PrefsDialog(SimpleGladeApp):
             color = gtk.gdk.color_parse(val)
             self.get_widget('bg-colorbutton').set_color(color)
         except (ValueError, TypeError):
-            warnings.warn('Unable to parse color %s' % val, Warning)
+            # unable to parse color
+            pass
             
         self.guake.use_bgimage = self.client.get_bool(GCONF_PATH+'general/use_bgimage')
         self.get_widget('chk_bg_transparent').set_active(not self.guake.use_bgimage)
@@ -248,9 +248,8 @@ class PrefsDialog(SimpleGladeApp):
         self.get_widget('treeview-keys').expand_all()
         
     # -- callbacks --
-
-    def on_historysize_spinbutton_value_changed(self, spin):
-        val = int(spin.get_value())
+    def on_spinHistorySize_value_changed(self, spinBtn):
+        val = int(spinBtn.get_value())
         self.client.set_int(GCONF_PATH + 'general/history_size', val)
         
     def on_show_scrollbar_checkbutton_toggled(self, chk):
@@ -307,9 +306,10 @@ class PrefsDialog(SimpleGladeApp):
         self.guake.set_bgcolor()
 
     def on_bgimage_filechooserbutton_selection_changed(self, bnt):
-        f = bnt.get_filename()
-        if f:
-            self.client.set_string(GCONF_PATH + 'style/background/image', f)
+        file = bnt.get_filename()
+        if file:
+            self.client.set_string(GCONF_PATH + 'style/background/image',
+                    file)
             self.guake.set_bgimage()
 
     def on_chk_bg_transparent_toggled(self, togglebutton):
@@ -344,14 +344,11 @@ class PrefsDialog(SimpleGladeApp):
         filename = file_chooser.get_preview_filename()
         if filename:
             try:
-                mkpb = gtk.gdk.pixbuf_new_from_file_at_size
-                pixbuf = mkpb(filename, 256, 256)
+                pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(filename, 256, 256)
                 preview.set_from_pixbuf(pixbuf)
                 file_chooser.set_preview_widget_active(True)
             except gobject.GError:
-                # this exception is raised when user chooses a non-image
-                # file or a directory
-                pass
+                pass #this exception is raised when user chooses a non-image file or a directory
         else:
             file_chooser.set_preview_widget_active(False)
 
@@ -367,8 +364,11 @@ class Guake(SimpleGladeApp):
         # setting global hotkey!
         globalhotkeys.init()
         key = self.client.get_string(GHOTKEYS[0][0])
-        globalhotkeys.bind(key, self.show_hide)
-
+        bind_result = globalhotkeys.bind(key, self.show_hide)
+        if not bind_result:
+            print "Error when binding %s"%key
+            import sys
+            sys.exit(1)
         # trayicon!
         tray_icon = GuakeStatusIcon()
         tray_icon.connect('popup-menu', self.show_menu)
@@ -409,7 +409,7 @@ class Guake(SimpleGladeApp):
             self.hide()
         
     def refresh(self):
-        # FIXME: vte.Terminal need to be shown with his parent window to
+        # FIXME: vte.Terminal need to be showed with his parent window to
         # can load his configs of back/fore color, fonts, etc.
         self.window.show_all()
         self.window.hide()
@@ -438,18 +438,40 @@ class Guake(SimpleGladeApp):
             self.hide()
 
     def show(self, wwidth, hheight):
-        # add tab must be called before window.show to avoid a
-        # blank screen before adding the tab.
-        if not self.term_list:
-            self.add_tab()
+        self.window.set_position(gtk.WIN_POS_NONE)
+        self.window.set_gravity(gtk.gdk.GRAVITY_NORTH)
         self.visible = True
         self.window.move(0, 0)
-        self.resize(*self.get_final_window_size())
-        self.window.show_all()
+        self.window.show()
+        self.window.stick()
+        self.animate_show()
+        if not self.term_list:
+            self.add_tab()
 
     def hide(self):
+        self.animate_hide()
         self.window.hide() # FIXME: Don't use hide_all here!
+        self.window.unstick()
         self.visible = False
+
+    def animate_show(self, *args):
+        width, final_height = self.get_final_window_size()
+        if self.client.get_bool(GCONF_PATH+'general/window_animate'):
+            self.resize(width, 1)
+            for i in range(1, final_height, self.animation_speed):
+                self.resize(width, i)
+                common.update_ui()
+        else:
+            self.resize(width, final_height)
+            common.update_ui()
+
+    def animate_hide(self,*args):
+        if self.client.get_bool(GCONF_PATH+'general/window_animate'):
+            width, final_height = self.get_final_window_size()
+            l = range(1, final_height, self.animation_speed)
+            for i in reversed(l):
+                self.resize(width, i)
+                common.update_ui()
 
     def get_window_size(self):
         width = self.window.get_screen().get_width()
@@ -713,7 +735,7 @@ if __name__ == '__main__':
     from dbusiface import dbus_init
     from common import test_gconf, ShowableError
     main()
-    
+
     if not test_gconf():
         raise ShowableError(_('Guake can not init!'),
             _('Gconf Error.\n'
